@@ -29,6 +29,9 @@ class ChatInterface:
         try:
             # Get user input with arrow key history navigation
             user_input = self.session.prompt('>>> ')
+
+            if user_input is None:
+                return None
             
             # Simple echo bot - replace with your chat logic
             if user_input.lower() in ['exit', 'quit']:

@@ -12,24 +12,8 @@ from typing import Dict, Any, Optional
 import questionary
 from configure import load_config, save_config, configure
 from list_models import list_models
+from chat import chat
 from chat_interface import ChatInterface
-
-def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
-    """Interact with the OpenRouter API using a chat model."""
-
-    interface = ChatInterface()
-
-    while True:
-        user_input = interface.run()
-
-        if user_input is None:
-            exit(1)
-        elif user_input == '':
-            continue
-        
-        print(user_input)
-
-
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="OpenRouter CLI - Interact with OpenRouter API")

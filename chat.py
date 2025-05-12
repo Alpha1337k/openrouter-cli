@@ -9,11 +9,17 @@ import questionary
 from configure import load_config, save_config, configure
 from list_models import list_models
 from chat_interface import ChatInterface
+from rich.console import Console
+from rich.markdown import Markdown
 
-def make_api_request(endpoint: str, data: Dict[str, Any], api_key: str) -> Dict[str, Any]:    
-    response = requests.post(f"{API_URL}/{endpoint}", headers={
+def make_api_request(endpoint: str, data: Dict[str, Any], api_key: str, api_url: str) -> Dict[str, Any] | None:  
+    print(data)
+
+    response = requests.post(f"{api_url}/{endpoint}", headers={
         "Content-Type": "application/json",
         "Authorization": f"Bearer {api_key}",
+        "HTTP-Referer": "https://github.com/Alpha1337k/openrouter-cli",
+        "X-Title": "openrouter-cli"
     }, json=data)
     
     if response.status_code != 200:
@@ -28,6 +34,11 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
 
     interface = ChatInterface()
 
+    data = {
+        "messages": [],
+        "model": args.model
+    }
+
     while True:
         user_input = interface.run()
 
@@ -38,5 +49,22 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
         
         print(user_input)
 
-        response = make_api_request("chat/completions", data, config["api_key"])
+        data["messages"].append({"role": "user", "content": user_input})
+
+        response = make_api_request("chat/completions", data, 
+                                    api_key=config["api_key"], 
+                                    api_url=config['api_url'])
+
+        if response is None:
+            continue
+
+        print(response['choices'][0])
+
+        print(f"\n{response['choices'][0]['message']['content']}\n")
+
+        # console = Console()
+        # md = Markdown(response['choices'][0]['message']['content'])
+        # console.print(md)
+
+        data['messages'].append(response['choices'][0]['message']['content'])
 
