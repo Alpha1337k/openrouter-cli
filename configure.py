@@ -34,6 +34,8 @@ def configure(args: argparse.Namespace) -> None:
 
     if args.api_url:
         config["api_url"] = args.api_url
+    else:
+        config["api_url"] = "https://openrouter.ai/api/v1"
     
     if args.api_key:
         config["api_key"] = args.api_key
@@ -41,3 +43,5 @@ def configure(args: argparse.Namespace) -> None:
         api_key = input("Enter your OpenRouter API key: ")
         if api_key.strip():
             config["api_key"] = api_key
+
+    save_config(config)
