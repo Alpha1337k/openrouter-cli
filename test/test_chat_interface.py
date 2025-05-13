@@ -1,7 +1,7 @@
 import pytest
 import os
 from unittest.mock import Mock, patch
-from src.chat_interface import ChatInterface, NoTTYInterface
+from chat_interface import ChatInterface, NoTTYInterface
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.key_binding import KeyBindings

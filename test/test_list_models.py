@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch, Mock
 import sys
 import json
-from src.list_models import get_models
+from list_models import get_models
 
 # filepath: src/test_list_models.py
 

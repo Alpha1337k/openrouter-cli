@@ -10,11 +10,11 @@ import requests
 from datetime import datetime
 from typing import Dict, Any, Optional
 import questionary
-from src.configure import load_config, save_config, configure
-from src.list_models import list_models
-from src.chat import chat
-from src.chat_interface import ChatInterface
-
+from configure import load_config, save_config, configure
+from list_models import list_models
+from chat import chat
+from chat_interface import ChatInterface
+from importlib.metadata import version
 
 def float_range(mini, maxi):
     """Return function handle of an argument type function for
@@ -44,6 +44,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="OpenRouter CLI - Interact with OpenRouter API"
     )
+
+    parser.add_argument('-v', '--version', action='version', version=version('openrouter-cli'))
 
     subparsers = parser.add_subparsers(dest="command", required=True)
 

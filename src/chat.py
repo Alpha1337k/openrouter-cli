@@ -7,10 +7,10 @@ from requests import Response
 from datetime import datetime
 from typing import Dict, Any, Optional, Tuple
 import questionary
-from src.configure import load_config, save_config, configure
-from src.list_models import list_models, get_models
-from src.chat_interface import ChatInterface, NoTTYInterface
-from src.token_streamer import TokenStreamer
+from configure import load_config, save_config, configure
+from list_models import list_models, get_models
+from chat_interface import ChatInterface, NoTTYInterface
+from token_streamer import TokenStreamer
 from rich.console import Console
 from rich.style import Style
 from rich.markdown import Markdown

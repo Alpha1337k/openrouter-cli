@@ -2,7 +2,7 @@ import pytest
 import os
 import json
 from unittest.mock import patch
-from src.configure import load_config, save_config, configure
+from configure import load_config, save_config, configure
 from argparse import Namespace
 
 

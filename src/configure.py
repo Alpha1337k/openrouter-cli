@@ -10,7 +10,7 @@ def load_config() -> Dict[str, str]:
     config = {}
 
     # Check for config file
-    config_path = os.path.expanduser("~/.openrouter_config")
+    config_path = os.path.expanduser("~/.openrouter-cli/.config")
     if os.path.exists(config_path):
         try:
             with open(config_path, "r") as f:
@@ -18,6 +18,9 @@ def load_config() -> Dict[str, str]:
         except json.JSONDecodeError:
             print("Error: Invalid config file format")
             sys.exit(1)
+    else:
+        print("Error: could not load configuration. Did you run `openrouter-cli configure`?")
+        exit(1)
 
     return config
 
@@ -36,7 +39,7 @@ def save_config(config: Dict[str, str]) -> None:
 
 def configure(args: argparse.Namespace) -> None:
     """Configure the CLI."""
-    config = load_config()
+    config = {}
 
     if args.api_url:
         config["api_url"] = args.api_url

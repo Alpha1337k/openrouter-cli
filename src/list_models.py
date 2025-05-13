@@ -5,7 +5,7 @@ import sys
 import requests
 from datetime import datetime
 from typing import Dict, Any, Optional
-from src.configure import load_config, save_config, configure
+from configure import load_config, save_config, configure
 import pydoc
 import humanize
 
