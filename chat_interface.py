@@ -2,6 +2,24 @@ import prompt_toolkit
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import InMemoryHistory
 from prompt_toolkit.key_binding import KeyBindings
+import os
+import sys
+
+class NoTTYInterface:
+    def __init__(self):
+        pass
+    def run(self) -> str | None:
+        """Run the chat interface"""
+        
+        user_input = sys.stdin.read().strip()
+
+        if user_input is None or len(user_input) == 0:
+            print("Error: no / empty data provided")
+            return None
+
+        return user_input
+
+
 
 class ChatInterface:
     def __init__(self):
@@ -34,7 +52,7 @@ class ChatInterface:
                 return None
             
             # Simple echo bot - replace with your chat logic
-            if user_input.lower() in ['exit', 'quit']:
+            if user_input.lower() in ['/exit', '/quit']:
                 return None
                     
         except KeyboardInterrupt:

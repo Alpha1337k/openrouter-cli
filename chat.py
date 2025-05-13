@@ -8,13 +8,13 @@ from typing import Dict, Any, Optional
 import questionary
 from configure import load_config, save_config, configure
 from list_models import list_models, get_models
-from chat_interface import ChatInterface
+from chat_interface import ChatInterface, NoTTYInterface
 from rich.console import Console
 from rich.style import Style
 from rich.markdown import Markdown
 
 def make_api_request(endpoint: str, data: Dict[str, Any], api_key: str, api_url: str) -> Dict[str, Any] | None:  
-    print(data)
+    # print(data)
 
     response = requests.post(f"{api_url}/{endpoint}", headers={
         "Content-Type": "application/json",
@@ -30,6 +30,14 @@ def make_api_request(endpoint: str, data: Dict[str, Any], api_key: str, api_url:
     
     return response.json()
 
+def handle_no_tty_out(args: argparse.Namespace, response: Dict[str, Any]):
+    if (response['choices'][0]['message']['reasoning'] and args.no_thinking_stdout != True):
+        print("<think>")
+        print(response['choices'][0]['message']['reasoning'])
+        print("</think>")
+    print(response['choices'][0]['message']['content'])
+
+
 def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
     """Interact with the OpenRouter API using a chat model."""
 
@@ -39,7 +47,7 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
         print(f"Error: The specified model was not supported. Run 'openrouter models' for available models.")
         exit(1)
 
-    interface = ChatInterface()
+    interface = ChatInterface() if os.isatty(0) else NoTTYInterface()
 
     data = {
         "messages": [],
@@ -66,9 +74,13 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
         if response is None:
             continue
 
+        if os.isatty(sys.stdin.fileno()) == False:
+            handle_no_tty_out(args, response)
+            break
+
         console = Console()
 
-        if (response['choices'][0]['message']['reasoning']):
+        if (response['choices'][0]['message']['reasoning'] and args.no_thinking_stdout != True):
             md = Markdown(response['choices'][0]['message']['reasoning'])
             console.print(md, markup=True, style=Style(dim=True, italic=True))
             print('\n')

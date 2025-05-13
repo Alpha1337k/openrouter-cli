@@ -31,6 +31,7 @@ def main() -> None:
                                help='Model to use (e.g., google/gemini2.5)')
     
     chat_parser.add_argument("--temperature", type=float, help="Temperature parameter")
+    chat_parser.add_argument("--no-thinking-stdout", type=bool, default=False, help="Disable displaying thinking tokens.")
 
     models_parser = subparsers.add_parser("models", help="List available models")
     models_parser.add_argument("--raw", action="store_true", help="Print raw JSON response")
