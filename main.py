@@ -57,7 +57,10 @@ def main() -> None:
     chat_parser = subparsers.add_parser("run", help="Model selection")
 
     chat_parser.add_argument(
-        "model", nargs="?", default=None, help="Model to use (e.g., google/gemini-2.5-flash-preview)"
+        "model",
+        nargs="?",
+        default=None,
+        help="Model to use (e.g., google/gemini-2.5-flash-preview)",
     )
 
     chat_parser.add_argument(
@@ -84,6 +87,7 @@ def main() -> None:
     chat_parser.add_argument(
         "--pretty",
         action="store_true",
+        default=None,
         help="Display content as pretty text, even in an non-tty context.",
     )
 
