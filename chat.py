@@ -10,6 +10,7 @@ from configure import load_config, save_config, configure
 from list_models import list_models, get_models
 from chat_interface import ChatInterface
 from rich.console import Console
+from rich.style import Style
 from rich.markdown import Markdown
 
 def make_api_request(endpoint: str, data: Dict[str, Any], api_key: str, api_url: str) -> Dict[str, Any] | None:  
@@ -42,7 +43,10 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
 
     data = {
         "messages": [],
-        "model": args.model
+        "model": args.model,
+        "provider": {
+            "sort": "price"
+        }
     }
 
     while True:
@@ -53,8 +57,6 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
         elif user_input == '':
             continue
         
-        print(user_input)
-
         data["messages"].append({"role": "user", "content": user_input})
 
         response = make_api_request("chat/completions", data, 
@@ -64,11 +66,15 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
         if response is None:
             continue
 
-        print(response['choices'][0])
+        console = Console()
+
+        if (response['choices'][0]['message']['reasoning']):
+            md = Markdown(response['choices'][0]['message']['reasoning'])
+            console.print(md, markup=True, style=Style(dim=True, italic=True))
+            print('\n')
 
         # print(f"\n{response['choices'][0]['message']['content']}\n")
 
-        console = Console()
         md = Markdown(response['choices'][0]['message']['content'])
         console.print(md, markup=True)
 
