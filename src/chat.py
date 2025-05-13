@@ -10,7 +10,7 @@ import questionary
 from src.configure import load_config, save_config, configure
 from src.list_models import list_models, get_models
 from src.chat_interface import ChatInterface, NoTTYInterface
-from src.chat_streamer import TokenStreamer
+from src.token_streamer import TokenStreamer
 from rich.console import Console
 from rich.style import Style
 from rich.markdown import Markdown
@@ -164,10 +164,6 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
             continue
 
         content, reasoning = traverse_response_stream(args, response)
-
-        with open("out2", "+w") as file:
-            file.write(reasoning)
-            file.write(content)
 
         data["messages"].append(content)
 
