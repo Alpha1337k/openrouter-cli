@@ -10,10 +10,10 @@ import requests
 from datetime import datetime
 from typing import Dict, Any, Optional
 import questionary
-from configure import load_config, save_config, configure
-from list_models import list_models
-from chat import chat
-from chat_interface import ChatInterface
+from src.configure import load_config, save_config, configure
+from src.list_models import list_models
+from src.chat import chat
+from src.chat_interface import ChatInterface
 
 
 def main() -> None:
