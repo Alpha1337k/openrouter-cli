@@ -35,8 +35,6 @@ def list_models(args: argparse.Namespace, config: Dict[str, str]) -> None:
     if args.raw:
         print(json.dumps(models, indent=2))
     else:
-        print("Available models:")
-
         formatted_list = []
 
         for model in models:
