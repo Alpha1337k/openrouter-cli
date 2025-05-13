@@ -57,7 +57,7 @@ def main() -> None:
     chat_parser = subparsers.add_parser("run", help="Model selection")
 
     chat_parser.add_argument(
-        "model", nargs="?", default=None, help="Model to use (e.g., google/gemini2.5)"
+        "model", nargs="?", default=None, help="Model to use (e.g., google/gemini-2.5-flash-preview)"
     )
 
     chat_parser.add_argument(
@@ -77,9 +77,21 @@ def main() -> None:
 
     chat_parser.add_argument(
         "--no-thinking-stdout",
-        type=bool,
-        default=False,
+        action="store_true",
         help="Disable displaying thinking tokens.",
+    )
+
+    chat_parser.add_argument(
+        "--pretty",
+        action="store_true",
+        help="Display content as pretty text, even in an non-tty context.",
+    )
+
+    chat_parser.add_argument(
+        "--raw",
+        action="store_false",
+        dest="pretty",
+        help="Display content as raw text, even in an tty context.",
     )
 
     models_parser = subparsers.add_parser("models", help="List available models")
@@ -94,6 +106,9 @@ def main() -> None:
     elif args.command == "models":
         list_models(args, config=load_config())
     elif args.command == "run" and args.model is not None:
+        if args.pretty is None:
+            args.pretty = True if sys.stdout.isatty() else False
+
         chat(args, config=load_config())
     else:
         parser.print_help()

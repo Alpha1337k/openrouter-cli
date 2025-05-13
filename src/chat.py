@@ -60,7 +60,7 @@ def traverse_response_stream(args: argparse.Namespace, response: Response):
     reasoning_streamer: TokenStreamer | None = None
     content_streamer: TokenStreamer | None = None
 
-    if os.isatty(sys.stdin.fileno()):
+    if args.pretty == True:
         reasoning_streamer = TokenStreamer(functions["md_reasoning"])
         content_streamer = TokenStreamer(functions["md_content"])
 
@@ -86,7 +86,7 @@ def traverse_response_stream(args: argparse.Namespace, response: Response):
                         # print(data_obj["choices"][0]["delta"])
 
                         if data_obj["choices"][0]["delta"].get("reasoning"):
-                            if reasoning_streamer:
+                            if reasoning_streamer and args.no_thinking_stdout != True:
                                 reasoning_streamer.add_tokens(
                                     data_obj["choices"][0]["delta"].get("reasoning")
                                 )
@@ -100,9 +100,12 @@ def traverse_response_stream(args: argparse.Namespace, response: Response):
                                 reasoning_streamer.flush()
 
                             if content_streamer:
-                                if is_first_context and len(reasoning_buffer):
+
+                                # Add a splitter if reasoning is done and the content is starting.
+                                if is_first_context and len(reasoning_buffer) and args.no_thinking_stdout != True:
                                     content_streamer.add_tokens("\n---\n")
                                     is_first_context = False
+
                                 content_streamer.add_tokens(
                                     data_obj["choices"][0]["delta"].get("content")
                                 )
@@ -115,8 +118,8 @@ def traverse_response_stream(args: argparse.Namespace, response: Response):
             except Exception:
                 break
 
-    if os.isatty(sys.stdin.fileno()) == False:
-        if len(reasoning_buffer):
+    if args.pretty == False:
+        if len(reasoning_buffer) and args.no_thinking_stdout != True:
             print("<think>\n", reasoning_buffer, "</think>\n")
         print(content_buffer)
 
@@ -173,5 +176,5 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
 
         data["messages"].append(content)
 
-        if (os.isatty(sys.stdin.fileno())) == False:
+        if os.isatty(sys.stdout.fileno()) == False or os.isatty(sys.stdin.fileno()) == False:
             break
