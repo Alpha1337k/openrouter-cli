@@ -27,6 +27,7 @@ class TokenStreamer:
         self.console = Console()
         self.buffer = ""
         self.renderer = renderer
+        self.render_calls = 0
     
     def add_tokens(self, tokens):
         """
@@ -54,9 +55,13 @@ class TokenStreamer:
             # We found a safe split point
             content_to_render = self.buffer[:split_point]
             self.buffer = self.buffer[split_point:]
-            
+
+            if self.render_calls != 0:
+                print("\n")
             # Render the content
-            self.renderer(content_to_render, False)
+            self.renderer(content_to_render)
+
+            self.render_calls += 1
     
     def _find_safe_split_point(self):
         """
@@ -151,5 +156,8 @@ class TokenStreamer:
         Call this at the end of the stream.
         """
         if self.buffer.strip():
-            self.renderer(self.buffer.strip(), True)
+            if self.render_calls != 0:
+                print("")
+
+            self.renderer(self.buffer.strip())
             self.buffer = ""

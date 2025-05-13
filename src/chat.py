@@ -45,12 +45,13 @@ def traverse_response_stream(args: argparse.Namespace, response: Response):
 
     content_buffer = ""
     reasoning_buffer = ""
+    is_first_context = True
 
     console = Console()
 
     functions = {
-        "md_reasoning": lambda md, end: console.print(Markdown(md), markup=True, style=Style(dim=True, italic=True)),
-        "md_content": lambda md, end: console.print(Markdown(md), markup=True),
+        "md_reasoning": lambda md: console.print(Markdown(md), markup=True, style=Style(dim=True, italic=True)),
+        "md_content": lambda md: console.print(Markdown(md), markup=True),
     }
 
     reasoning_streamer: TokenStreamer | None = None
@@ -60,8 +61,8 @@ def traverse_response_stream(args: argparse.Namespace, response: Response):
         reasoning_streamer = TokenStreamer(functions["md_reasoning"])
         content_streamer = TokenStreamer(functions["md_content"])
 
-    for chunk in response.iter_content(chunk_size=1024, decode_unicode=True):
-        buffer += chunk
+    for chunk in response.iter_content(chunk_size=1024, decode_unicode=False):
+        buffer += chunk.decode('utf-8', errors='replace')
         while True:
             try:
                 # Find the next complete SSE line
@@ -73,23 +74,30 @@ def traverse_response_stream(args: argparse.Namespace, response: Response):
                 if line.startswith('data: '):
                     data = line[6:]
                     if data == '[DONE]':
-                        if reasoning_streamer and content_streamer:
-                            reasoning_streamer.flush()
+                        if content_streamer:
                             content_streamer.flush()
                         break
                     try:
                         data_obj = json.loads(data)
 
-                        if data_obj["choices"][0]["delta"].get("content"):
-                            if content_streamer:
-                                content_streamer.add_tokens(data_obj["choices"][0]["delta"].get("content"))
-                            content_buffer += data_obj["choices"][0]["delta"].get("content")
+                        # print(data_obj["choices"][0]["delta"])
+
                         if data_obj["choices"][0]["delta"].get("reasoning"):
                             if reasoning_streamer:
                                 reasoning_streamer.add_tokens(data_obj["choices"][0]["delta"].get("reasoning"))
                             reasoning_buffer += data_obj["choices"][0]["delta"].get("reasoning")
 
+                        if data_obj["choices"][0]["delta"].get("content"):
+                            # Let's print all the remaining tokens in the reasoning buffer.
+                            if reasoning_streamer:
+                                reasoning_streamer.flush()
 
+                            if content_streamer:
+                                if is_first_context and len(reasoning_buffer):
+                                    content_streamer.add_tokens("\n---\n")
+                                    is_first_context = False
+                                content_streamer.add_tokens(data_obj["choices"][0]["delta"].get("content"))
+                            content_buffer += data_obj["choices"][0]["delta"].get("content")
                         
                     except json.JSONDecodeError:
                         pass
