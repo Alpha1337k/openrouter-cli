@@ -24,7 +24,10 @@ def load_config() -> Dict[str, str]:
 
 def save_config(config: Dict[str, str]) -> None:
     """Save configuration to file."""
-    config_path = os.path.expanduser("~/.openrouter_config")
+
+    os.makedirs(os.path.expanduser("~/.openrouter-cli"), exist_ok=True)
+
+    config_path = os.path.expanduser("~/.openrouter-cli/.config")
     with open(config_path, "w") as f:
         json.dump(config, f, indent=2)
     os.chmod(config_path, 0o600)

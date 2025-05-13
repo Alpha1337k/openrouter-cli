@@ -1,6 +1,6 @@
 import prompt_toolkit
 from prompt_toolkit import PromptSession
-from prompt_toolkit.history import InMemoryHistory
+from prompt_toolkit.history import FileHistory
 from prompt_toolkit.key_binding import KeyBindings
 import os
 import sys
@@ -24,8 +24,12 @@ class NoTTYInterface:
 
 class ChatInterface:
     def __init__(self):
-        # Create a history object to store previous commands
-        self.history = InMemoryHistory()
+        os.makedirs(os.path.expanduser("~/.openrouter-cli"), exist_ok=True)
+
+        history_path = os.path.expanduser("~/.openrouter-cli/history")
+
+        # Create a history object to store previous commands.
+        self.history = FileHistory(history_path)
 
         # Create key bindings
         self.kb = KeyBindings()
