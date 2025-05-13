@@ -2,20 +2,29 @@
 
 An Ollama-like CLI tool for OpenRouter that provides simple command-line access to various AI models.
 
+<p align="center">
+  <picture align="center">
+    <source srcset="./assets/sample.png">
+    <img alt="Shows a sample command for openrouter-cli.">
+  </picture>
+</p>
+
 ## Features
 
-- List available OpenRouter models with context sizes and pricing
 - Interactive chat interface with AI models
-- Support for stdin input, useful for scripting
 - Responses are styled for maximum readability
+- List available OpenRouter models with context sizes and pricing
+- Support for stdin input, useful for scripting
+- Allows for system prompts, temperature, and more.
+- Persistent local history over sessions
 
 ## Installation
 
-<!-- Install via pip:
+Install via pip:
 
 ```bash
 pip install openrouter-cli
-``` -->
+```
 
 ## Configuration
 
@@ -25,20 +34,17 @@ Before using the CLI, you'll need to configure your OpenRouter API key:
 openrouter-cli configure
 ```
 
-Your API key will be stored at `~/.openrouter_config`.
+Your API key will be stored at `~/.openrouter-cli/.config`.
 
 ## Usage
 
 ### List Available Models
 
 ```bash
-openrouter-cli models [-h] [--raw]
+openrouter-cli models [--raw]
 ```
 
 Lists all available models in a human-readable format.
-
-Options:
-- `--raw`: Print raw JSON response
 
 Example output:
 
@@ -55,7 +61,7 @@ Example output:
 ### Chat with a Model
 
 ```bash
-openrouter-cli run [model]
+openrouter-cli run [model] [--temperature TEMPERATURE] [--seed SEED] [--effort {high,medium,low}] [--system SYSTEM] [--no-thinking-stdout] [--pretty] [--raw]
 ```
 
 Starts an interactive chat session with the specified model. Responses are properly styled and formatted for optimal readability in the terminal.

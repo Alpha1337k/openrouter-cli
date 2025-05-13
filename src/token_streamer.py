@@ -20,9 +20,6 @@ class TokenStreamer:
     def __init__(self, renderer):
         """
         Initialize a markdown streamer that handles token streams reliably.
-
-        Args:
-            min_render_interval (float): Minimum seconds between renders to avoid flickering
         """
         self.console = Console()
         self.buffer = ""
