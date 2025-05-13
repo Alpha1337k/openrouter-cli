@@ -40,6 +40,7 @@ def get_chat_completions(
 
     return response
 
+
 def traverse_response_stream(args: argparse.Namespace, response: Response):
     buffer = ""
 
@@ -50,30 +51,32 @@ def traverse_response_stream(args: argparse.Namespace, response: Response):
     console = Console()
 
     functions = {
-        "md_reasoning": lambda md: console.print(Markdown(md), markup=True, style=Style(dim=True, italic=True)),
+        "md_reasoning": lambda md: console.print(
+            Markdown(md), markup=True, style=Style(dim=True, italic=True)
+        ),
         "md_content": lambda md: console.print(Markdown(md), markup=True),
     }
 
     reasoning_streamer: TokenStreamer | None = None
     content_streamer: TokenStreamer | None = None
 
-    if (os.isatty(sys.stdin.fileno())):
+    if os.isatty(sys.stdin.fileno()):
         reasoning_streamer = TokenStreamer(functions["md_reasoning"])
         content_streamer = TokenStreamer(functions["md_content"])
 
     for chunk in response.iter_content(chunk_size=1024, decode_unicode=False):
-        buffer += chunk.decode('utf-8', errors='replace')
+        buffer += chunk.decode("utf-8", errors="replace")
         while True:
             try:
                 # Find the next complete SSE line
-                line_end = buffer.find('\n')
+                line_end = buffer.find("\n")
                 if line_end == -1:
                     break
                 line = buffer[:line_end].strip()
-                buffer = buffer[line_end + 1:]
-                if line.startswith('data: '):
+                buffer = buffer[line_end + 1 :]
+                if line.startswith("data: "):
                     data = line[6:]
-                    if data == '[DONE]':
+                    if data == "[DONE]":
                         if content_streamer:
                             content_streamer.flush()
                         break
@@ -84,8 +87,12 @@ def traverse_response_stream(args: argparse.Namespace, response: Response):
 
                         if data_obj["choices"][0]["delta"].get("reasoning"):
                             if reasoning_streamer:
-                                reasoning_streamer.add_tokens(data_obj["choices"][0]["delta"].get("reasoning"))
-                            reasoning_buffer += data_obj["choices"][0]["delta"].get("reasoning")
+                                reasoning_streamer.add_tokens(
+                                    data_obj["choices"][0]["delta"].get("reasoning")
+                                )
+                            reasoning_buffer += data_obj["choices"][0]["delta"].get(
+                                "reasoning"
+                            )
 
                         if data_obj["choices"][0]["delta"].get("content"):
                             # Let's print all the remaining tokens in the reasoning buffer.
@@ -96,20 +103,25 @@ def traverse_response_stream(args: argparse.Namespace, response: Response):
                                 if is_first_context and len(reasoning_buffer):
                                     content_streamer.add_tokens("\n---\n")
                                     is_first_context = False
-                                content_streamer.add_tokens(data_obj["choices"][0]["delta"].get("content"))
-                            content_buffer += data_obj["choices"][0]["delta"].get("content")
-                        
+                                content_streamer.add_tokens(
+                                    data_obj["choices"][0]["delta"].get("content")
+                                )
+                            content_buffer += data_obj["choices"][0]["delta"].get(
+                                "content"
+                            )
+
                     except json.JSONDecodeError:
                         pass
             except Exception:
                 break
-    
+
     if os.isatty(sys.stdin.fileno()) == False:
         if len(reasoning_buffer):
             print("<think>\n", reasoning_buffer, "</think>\n")
         print(content_buffer)
 
     return content_buffer, reasoning_buffer
+
 
 def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
     """Interact with the OpenRouter API using a chat model."""
@@ -124,7 +136,12 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
 
     interface = ChatInterface() if os.isatty(0) else NoTTYInterface()
 
-    data = {"messages": [], "model": args.model, "provider": {"sort": "price"}, "stream": True}
+    data = {
+        "messages": [],
+        "model": args.model,
+        "provider": {"sort": "price"},
+        "stream": True,
+    }
 
     while True:
         user_input = interface.run()
@@ -145,10 +162,10 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
 
         if response is None:
             continue
-        
+
         content, reasoning = traverse_response_stream(args, response)
 
-        with open('out2', '+w') as file:
+        with open("out2", "+w") as file:
             file.write(reasoning)
             file.write(content)
 
