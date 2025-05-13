@@ -11,3 +11,8 @@ dependencies = [
     "requests>=2.32.3",
     "rich>=14.0.0",
 ]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+]

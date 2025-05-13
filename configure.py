@@ -4,10 +4,11 @@ import os
 import sys
 import argparse
 
+
 def load_config() -> Dict[str, str]:
     """Load configuration from file or environment variables."""
     config = {}
-    
+
     # Check for config file
     config_path = os.path.expanduser("~/.openrouter_config")
     if os.path.exists(config_path):
@@ -17,8 +18,9 @@ def load_config() -> Dict[str, str]:
         except json.JSONDecodeError:
             print("Error: Invalid config file format")
             sys.exit(1)
-    
+
     return config
+
 
 def save_config(config: Dict[str, str]) -> None:
     """Save configuration to file."""
@@ -28,6 +30,7 @@ def save_config(config: Dict[str, str]) -> None:
     os.chmod(config_path, 0o600)
     print(f"Configuration saved to {config_path}")
 
+
 def configure(args: argparse.Namespace) -> None:
     """Configure the CLI."""
     config = load_config()
@@ -36,7 +39,7 @@ def configure(args: argparse.Namespace) -> None:
         config["api_url"] = args.api_url
     else:
         config["api_url"] = "https://openrouter.ai/api/v1"
-    
+
     if args.api_key:
         config["api_key"] = args.api_key
     else:
