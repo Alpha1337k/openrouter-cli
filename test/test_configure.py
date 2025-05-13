@@ -16,12 +16,15 @@ def temp_config_dir(tmp_path):
 
 
 def test_load_config_nonexistent(temp_config_dir):
-    config = load_config()
-    assert config == {}
+    with pytest.raises(SystemExit):
+        load_config()
 
 
 def test_load_config_invalid_json(temp_config_dir):
-    config_path = os.path.expanduser("~/.openrouter_config")
+    config_path = os.path.expanduser("~/.openrouter-cli/.config")
+
+    os.makedirs(os.path.expanduser("~/.openrouter-cli"), exist_ok=True)
+
     with open(config_path, "w") as f:
         f.write("invalid json")
 
@@ -30,8 +33,11 @@ def test_load_config_invalid_json(temp_config_dir):
 
 
 def test_load_config_valid(temp_config_dir):
-    config_path = os.path.expanduser("~/.openrouter_config")
+    config_path = os.path.expanduser("~/.openrouter-cli/.config")
     test_config = {"api_key": "test_key", "api_url": "test_url"}
+
+    os.makedirs(os.path.expanduser("~/.openrouter-cli"), exist_ok=True)
+
     with open(config_path, "w") as f:
         json.dump(test_config, f)
 
