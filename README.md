@@ -2,12 +2,7 @@
 
 An Ollama-like CLI tool for OpenRouter that provides simple command-line access to various AI models.
 
-<p align="center">
-  <picture align="center">
-    <source srcset="./assets/sample.png">
-    <img alt="Shows a sample command for openrouter-cli.">
-  </picture>
-</p>
+![Shows an example command for openrouter-cli.](https://github.com/Alpha1337k/openrouter-cli/blob/main/assets/sample.png)
 
 ## Features
 
