@@ -7,7 +7,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 import questionary
 from configure import load_config, save_config, configure
-from list_models import list_models
+from list_models import list_models, get_models
 from chat_interface import ChatInterface
 from rich.console import Console
 from rich.markdown import Markdown
@@ -31,6 +31,12 @@ def make_api_request(endpoint: str, data: Dict[str, Any], api_key: str, api_url:
 
 def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
     """Interact with the OpenRouter API using a chat model."""
+
+    models = get_models(config["api_url"], config['api_key'])
+
+    if next((model for model in models if model['id'] == args.model), None) is None:
+        print(f"Error: The specified model was not supported. Run 'openrouter models' for available models.")
+        exit(1)
 
     interface = ChatInterface()
 
@@ -60,11 +66,11 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
 
         print(response['choices'][0])
 
-        print(f"\n{response['choices'][0]['message']['content']}\n")
+        # print(f"\n{response['choices'][0]['message']['content']}\n")
 
-        # console = Console()
-        # md = Markdown(response['choices'][0]['message']['content'])
-        # console.print(md)
+        console = Console()
+        md = Markdown(response['choices'][0]['message']['content'])
+        console.print(md, markup=True)
 
         data['messages'].append(response['choices'][0]['message']['content'])
 
