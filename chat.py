@@ -43,7 +43,7 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
         user_input = interface.run()
 
         if user_input is None:
-            exit(1)
+            exit(0)
         elif user_input == '':
             continue
         
