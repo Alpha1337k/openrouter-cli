@@ -141,7 +141,13 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
         "model": args.model,
         "provider": {"sort": "price"},
         "stream": True,
+        "temperature": args.temperature or None,
+        "seed": args.seed or None,
+        "effort": args.effort or None,
     }
+
+    if args.system:
+        data["messages"].append({"role": "system", "content": args.system})
 
     while True:
         user_input = interface.run()

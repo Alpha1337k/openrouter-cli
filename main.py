@@ -16,6 +16,30 @@ from src.chat import chat
 from src.chat_interface import ChatInterface
 
 
+def float_range(mini, maxi):
+    """Return function handle of an argument type function for
+    ArgumentParser checking a float range: mini <= arg <= maxi
+      mini - minimum acceptable argument
+      maxi - maximum acceptable argument"""
+
+    # Define the function with default arguments
+    def float_range_checker(arg):
+        """New Type function for argparse - a float within predefined range."""
+
+        try:
+            f = float(arg)
+        except ValueError:
+            raise argparse.ArgumentTypeError("must be a floating point number")
+        if f < mini or f > maxi:
+            raise argparse.ArgumentTypeError(
+                "must be in range [" + str(mini) + " .. " + str(maxi) + "]"
+            )
+        return f
+
+    # Return function handle to checking function
+    return float_range_checker
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="OpenRouter CLI - Interact with OpenRouter API"
@@ -36,7 +60,21 @@ def main() -> None:
         "model", nargs="?", default=None, help="Model to use (e.g., google/gemini2.5)"
     )
 
-    chat_parser.add_argument("--temperature", type=float, help="Temperature parameter")
+    chat_parser.add_argument(
+        "--temperature", type=float_range(0, 1), help="Sampling temperature"
+    )
+    chat_parser.add_argument(
+        "--seed", type=float, help="Seed for deterministic outputs."
+    )
+    chat_parser.add_argument(
+        "--effort",
+        choices=["high", "medium", "low"],
+        help="OpenAI-style reasoning effort setting",
+    )
+    chat_parser.add_argument(
+        "--system", type=str, help="System prompt to use during the chat."
+    )
+
     chat_parser.add_argument(
         "--no-thinking-stdout",
         type=bool,
