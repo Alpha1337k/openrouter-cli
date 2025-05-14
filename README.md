@@ -19,6 +19,8 @@ Install via pip:
 
 ```bash
 pip install openrouter-cli
+# alternatively
+uv tool install openrouter-cli
 ```
 
 ## Configuration
