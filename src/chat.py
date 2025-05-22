@@ -186,6 +186,11 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
             exit(0)
         elif user_input == "":
             continue
+        elif user_input == "/messages":
+            for message in data["messages"]:
+                print(f"{message['role']}: {message['content']}")
+            continue
+
 
         data["messages"].append({"role": "user", "content": user_input})
 
@@ -201,7 +206,7 @@ def chat(args: argparse.Namespace, config: Dict[str, str]) -> None:
 
         content, reasoning = traverse_response_stream(args, response)
 
-        data["messages"].append(content)
+        data["messages"].append({'role': 'assistant', 'content': content})
 
         if (
             os.isatty(sys.stdout.fileno()) == False
